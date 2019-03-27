@@ -383,5 +383,11 @@ jQuery(document).ready(function($){
         },5000);
     });
 
+
     // jquery end
 });
+
+function set_data(){
+console.log("hello music");
+
+}
