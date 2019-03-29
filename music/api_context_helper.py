@@ -34,9 +34,11 @@ def get_audio_stream_info(audio_id='gG2npfpaqsY'):
     stream_audio = {}
 
     audio_instance = pafy.new('https://www.youtube.com/watch?v='+audio_id)
+    stream_audio['audio_id'] = audio_id
     stream_audio['title'] = audio_instance.title
+    stream_audio['description'] = audio_instance.description
     stream_audio['thumbnail'] = audio_instance.thumb
-    stream_audio['stream_url'] = audio_instance.getbestaudio()
+    stream_audio['stream_url'] = audio_instance.getbestaudio().url
     stream_audio['duration'] = audio_instance.duration
     return_response['audio_stream'] = stream_audio
     return_response['related_audio'] = get_related_audio()
@@ -63,10 +65,12 @@ def get_audio_context_list(search_response):
     for search_result in search_response.get("items", []):
         if search_result["id"]["kind"] == 'youtube#video':
             song_dict = {}
-            song_dict['title'] = search_result['snippet']['title']
-            song_dict['thumbnail'] = search_result['snippet']['thumbnails']['default']['url']
-            song_dict['description'] = search_result['snippet']['description']
-            song_dict['song_id'] = search_result['id']['videoId']
+            song_dict['title'] = search_result['snippet']['title'][:30]
+            song_dict['thumbnail'] = search_result['snippet']['thumbnails']['medium']['url']
+            song_dict['description'] = search_result['snippet']['description'][:30]
+            song_dict['audio_id'] = search_result['id']['videoId']
+            song_dict['stream_url'] = ""
+
             response_list.append(song_dict)
     return response_list
 
@@ -90,8 +94,8 @@ def get_video_info(audio_id):
 
 # Helper function for getting recommended song
 def get_recommended_song():
-    recommended_list = []
-    return recommended_list
+    recommended_list = get_search_result("mai ishaq ka raja song")
+    return recommended_list[:10]
 
 
 # Helper function for getting recommended song

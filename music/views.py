@@ -10,14 +10,29 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.views import View
 from . import api_context_helper, auth_helper
-
+from .models import LastPlayedAudio
+from django.core.cache import cache
+import time
 
 # Home generic view for home page http request
 class Index(View):
 
     def get(self, request):
+        st = time.time()
         context_data = api_context_helper.get_recommended_song()
-        return render(request, 'index.html', context_data)
+        print(time.time()-st)
+        stt = time.time()
+        last_played_count = LastPlayedAudio.objects.all().count()
+        if last_played_count == 0:
+            audio_instance = api_context_helper.get_audio_stream_info(context_data[0]['audio_id'])
+            model_instance = LastPlayedAudio(title=audio_instance['title'], audio_id=audio_instance['audio_id'], description=audio_instance['description'], stream_url=audio_instance['stream_url'], thumbnail=audio_instance['thumbnail'])
+            model_instance.save()
+        print("second")
+
+        print(time.time()-stt)
+        context_data[0]['stream_url'] = LastPlayedAudio.objects.all()[0].stream_url
+        print(context_data[0]['stream_url'])
+        return render(request, 'index.html', {'data': context_data})
 
     def post(self, request):
         return render(request, 'index.html')

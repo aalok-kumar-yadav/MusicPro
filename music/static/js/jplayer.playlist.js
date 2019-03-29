@@ -350,6 +350,7 @@
 			audio.controls = false;
 			audio.preload = false;
 			audio.src = media.mp3;
+			audio.class = "audio_player_class"
 			audio.style.display = "none";
 			$('body').append(audio);
 
